@@ -7,11 +7,17 @@ namespace Claims_Api_Test.Controllers
     [Route("[controller]")]
     public class ClaimsController : ControllerBase
     {
-        private readonly ILogger<ClaimsController> _logger;
+        public List<Company> companies = [];
+        public List<ClaimType> claimTypes = [];
+        public List<Claim> claims = [];
 
-        public ClaimsController(ILogger<ClaimsController> logger)
+        public ClaimsController() { }
+
+        public ClaimsController(List<Company> companies, List<ClaimType> claimTypes, List<Claim> claims)
         {
-            _logger = logger;
+            this.companies = companies;
+            this.claimTypes = claimTypes;
+            this.claims = claims;
         }
 
         [HttpGet(Name = "GetCompany")]

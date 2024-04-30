@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Claims_Api_Test\Claims_Api_Test.csproj" />
+  </ItemGroup>
+
 </Project>
