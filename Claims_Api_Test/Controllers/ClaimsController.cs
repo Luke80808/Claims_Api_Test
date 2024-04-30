@@ -3,6 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api_Test.Controllers
 {
+    public class CompanyResponse
+    {
+        public required Company Company { get; set; }
+        public bool HasActivePolicy { get; set; }
+    }
+
     [ApiController]
     [Route("api/[controller]")]
     public class ClaimsController : ControllerBase
@@ -105,7 +111,17 @@ namespace Claims_Api_Test.Controllers
             {
                 return NotFound();
             }
-            return Ok(company);
+            var hasActivePolicy = CheckCompanyHasActivePolicy(company.InsuranceEndDate);
+            return Ok(new CompanyResponse { Company = company, HasActivePolicy = hasActivePolicy });
+        }
+
+        private bool CheckCompanyHasActivePolicy(DateTime policyEndDate)
+        {
+            if (policyEndDate < DateTime.UtcNow)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

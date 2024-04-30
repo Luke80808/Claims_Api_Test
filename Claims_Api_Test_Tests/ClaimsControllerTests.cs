@@ -13,7 +13,8 @@ namespace Claims_Api_Test_Tests
 
             var result = controller.GetCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
-            var actualCompany = okResult?.Value as Company;
+            var companyResponse = okResult?.Value as CompanyResponse;
+            var actualCompany = companyResponse?.Company;
 
             Assert.Equal(controller.companies.FirstOrDefault(x => x.Id == 1), actualCompany);
         }
