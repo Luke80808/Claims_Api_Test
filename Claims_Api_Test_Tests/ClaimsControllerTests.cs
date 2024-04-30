@@ -1,5 +1,6 @@
 using Claims_Api_Test.Controllers;
 using Claims_Api_Test.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api_Test_Tests
 {
@@ -13,8 +14,11 @@ namespace Claims_Api_Test_Tests
             var testClaims = GetTestClaims();
             var controller = new ClaimsController(testCompanies, testClaimTypes, testClaims);
 
-            var result = controller.GetCompany();
-            Assert.Equal(testCompanies[0], result.Result);
+            var result = controller.GetCompanyAsync(1).Result;
+            var okResult = result as OkObjectResult;
+            var actualCompany = okResult?.Value as Company;
+
+            Assert.Equal(testCompanies.FirstOrDefault(x => x.Id == 1), actualCompany);
         }
 
         private static List<Company> GetTestCompanies()
