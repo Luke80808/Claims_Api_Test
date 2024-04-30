@@ -9,16 +9,13 @@ namespace Claims_Api_Test_Tests
         [Fact]
         public void GetCompany_RetrievesCompany()
         {
-            var testCompanies = GetTestCompanies();
-            var testClaimTypes = GetTestClaimTypes();
-            var testClaims = GetTestClaims();
-            var controller = new ClaimsController(testCompanies, testClaimTypes, testClaims);
+            var controller = new ClaimsController();
 
             var result = controller.GetCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
             var actualCompany = okResult?.Value as Company;
 
-            Assert.Equal(testCompanies.FirstOrDefault(x => x.Id == 1), actualCompany);
+            Assert.Equal(controller.companies.FirstOrDefault(x => x.Id == 1), actualCompany);
         }
 
         private static List<Company> GetTestCompanies()
