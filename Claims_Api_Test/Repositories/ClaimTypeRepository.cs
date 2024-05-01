@@ -1,5 +1,5 @@
 ﻿using Claims_Api_Test.Interfaces;
-using Claims_Api_Test.Models;
+using Claims_Api.Models;
 
 namespace Claims_Api.Repositories;
 

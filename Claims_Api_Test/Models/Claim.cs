@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Claims_Api_Test.Models;
+namespace Claims_Api.Models;
 
 public class Claim
 {

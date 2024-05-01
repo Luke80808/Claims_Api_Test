@@ -1,6 +1,6 @@
+using Claims_Api.Controllers;
 using Claims_Api.Repositories;
-using Claims_Api_Test.Controllers;
-using Claims_Api_Test.Models;
+using Claims_Api.Models;
 using Claims_Api_Test.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -113,7 +113,7 @@ namespace Claims_Api_Test_NUnitTests
             //arrange
 
             //act
-            var controller = new ClaimsController(_companyRepository, _claimRepository);
+            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
 
             var result = controller.GetCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
@@ -130,7 +130,7 @@ namespace Claims_Api_Test_NUnitTests
             //arrange
 
             //act
-            var controller = new ClaimsController(_companyRepository, _claimRepository);
+            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
 
             //assert
             Assert.ThrowsAsync<NullReferenceException>(() => controller.GetCompanyAsync(100));
