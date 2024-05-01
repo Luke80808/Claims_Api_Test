@@ -3,5 +3,5 @@
 public interface IRepositoryBase<T>
 {
     void Add(T entity);
-    T Get(string id);
+    T? Get(string id);
 }

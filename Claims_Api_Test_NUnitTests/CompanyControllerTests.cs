@@ -1,6 +1,7 @@
 using Claims_Api.Controllers;
 using Claims_Api.Models;
 using Claims_Api.Repositories;
+using Claims_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api_Test_NUnitTests
@@ -112,7 +113,7 @@ namespace Claims_Api_Test_NUnitTests
             //arrange
 
             //act
-            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new CompanyController(_companyRepository);
 
             var result = controller.GetCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
@@ -124,15 +125,52 @@ namespace Claims_Api_Test_NUnitTests
         }
 
         [Test]
-        public void GetCompany_ThrowsNullReferenceException_WhenNoMatch()
+        public void GetCompany_Returns404_WhenNoMatch()
         {
             //arrange
 
             //act
-            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new CompanyController(_companyRepository);
+
+            var result = controller.GetCompanyAsync(1000).Result;
+            var notFoundResult = result as NotFoundObjectResult;
 
             //assert
-            Assert.ThrowsAsync<NullReferenceException>(() => controller.GetCompanyAsync(100));
+            Assert.That(notFoundResult?.StatusCode, Is.EqualTo(404));
+        }
+
+        [Test]
+        public void GetCompany_ReturnsTrue_WhenActivePolicy()
+        {
+            //arrange
+
+            //act
+            var controller = new CompanyController(_companyRepository);
+
+            var result = controller.GetCompanyAsync(1).Result;
+            var okResult = result as OkObjectResult;
+            var companyResponse = okResult?.Value as CompanyResponse;
+            var hasActivePolicy = companyResponse?.HasActivePolicy;
+
+            //assert
+            Assert.That(hasActivePolicy, Is.EqualTo(CompanyService.CheckCompanyHasActivePolicy(DateTime.Parse("2024-05-31"))));
+        }
+
+        [Test]
+        public void GetCompany_ReturnsFalse_WhenInactivePolicy()
+        {
+            //arrange
+
+            //act
+            var controller = new CompanyController(_companyRepository);
+
+            var result = controller.GetCompanyAsync(2).Result;
+            var okResult = result as OkObjectResult;
+            var companyResponse = okResult?.Value as CompanyResponse;
+            var hasActivePolicy = companyResponse?.HasActivePolicy;
+
+            //assert
+            Assert.That(hasActivePolicy, Is.EqualTo(CompanyService.CheckCompanyHasActivePolicy(DateTime.Parse("2023-12-31"))));
         }
     }
 }

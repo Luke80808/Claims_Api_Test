@@ -12,8 +12,8 @@ public class CompanyRepository : IRepositoryBase<Company>
         _companies.Add(company);
     }
 
-    public Company Get(string id)
+    public Company? Get(string id)
     {
-        return _companies.FirstOrDefault(x => x.Id.ToString() == id) ?? throw new NullReferenceException("Company not found");
+        return _companies.FirstOrDefault(x => x.Id.ToString() == id) ?? null;
     }
 }

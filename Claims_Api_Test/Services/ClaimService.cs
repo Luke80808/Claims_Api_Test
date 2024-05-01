@@ -4,6 +4,6 @@ public class ClaimService
 {
     public static double GetClaimAgeInDays(DateTime claimDate)
     {
-        return (DateTime.Today - claimDate).TotalDays;
+        return (DateTime.Today.Date - claimDate.Date).Days;
     }
 }

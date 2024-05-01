@@ -1,6 +1,7 @@
 ﻿using Claims_Api.Controllers;
 using Claims_Api.Models;
 using Claims_Api.Repositories;
+using Claims_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api_Tests
@@ -83,7 +84,7 @@ namespace Claims_Api_Tests
             {
                 UCR = "Company1Claim002",
                 CompanyId = 1,
-                ClaimDate = DateTime.Parse("2024-03-11"),
+                ClaimDate = DateTime.Now,
                 LossDate = DateTime.Parse("2024-02-28"),
                 AssuredName = "Company1",
                 IncurredLoss = 500.00m,
@@ -112,7 +113,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new ClaimController(_claimRepository);
 
             var result = controller.GetClaimsForCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
@@ -128,7 +129,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new ClaimController(_claimRepository);
 
             var result = controller.GetClaimsForCompanyAsync(100).Result;
             var okResult = result as OkObjectResult;
@@ -144,15 +145,126 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new ClaimController(_claimRepository);
 
             var result = controller.GetClaimDetailsAsync("Company1Claim001").Result;
             var okResult = result as OkObjectResult;
-            var companyResponse = okResult?.Value as ClaimResponse;
-            var actualCompany = companyResponse?.Claim;
+            var claimResponse = okResult?.Value as ClaimResponse;
+            var actualCompany = claimResponse?.Claim;
 
             //assert
             Assert.That(actualCompany, Is.EqualTo(_claimRepository._claims.FirstOrDefault(x => x.UCR == "Company1Claim001")));
+        }
+
+        [Test]
+        public void GetClaimDetails_GivesCorrectClaimAge()
+        {
+            //arrange
+
+            //act
+            var controller = new ClaimController(_claimRepository);
+
+            var result = controller.GetClaimDetailsAsync("Company1Claim001").Result;
+            var okResult = result as OkObjectResult;
+            var claimResponse = okResult?.Value as ClaimResponse;
+            var claimAge = claimResponse?.ClaimAgeInDays;
+
+            //assert
+            Assert.That(claimAge, Is.EqualTo(ClaimService.GetClaimAgeInDays(DateTime.Parse("2024-02-06"))));
+        }
+
+        [Test]
+        public void GetClaimDetails_GivesCorrectClaimAge_ForClaimMadeToday()
+        {
+            //arrange
+
+            //act
+            var controller = new ClaimController(_claimRepository);
+
+            var result = controller.GetClaimDetailsAsync("Company1Claim002").Result;
+            var okResult = result as OkObjectResult;
+            var claimResponse = okResult?.Value as ClaimResponse;
+            var claimAge = claimResponse?.ClaimAgeInDays;
+
+            //assert
+            Assert.That(claimAge, Is.EqualTo(ClaimService.GetClaimAgeInDays(DateTime.Now)));
+        }
+
+        [Test]
+        public void UpdateClaim_CorrectlyUpdatesClosed()
+        {
+            //arrange
+            var updatedClaim = new Claim
+            {
+                UCR = "Company1Claim002",
+                CompanyId = 1,
+                ClaimDate = DateTime.Now,
+                LossDate = DateTime.Parse("2024-02-28"),
+                AssuredName = "Company1",
+                IncurredLoss = 500.00m,
+                Closed = true
+            };
+
+            //act
+            var controller = new ClaimController(_claimRepository);
+
+            var result = controller.UpdateClaimAsync("Company1Claim002", updatedClaim).Result;
+            var okResult = result as OkObjectResult;
+            var claim = okResult?.Value as Claim;
+
+            //assert
+            Assert.That(claim?.Closed, Is.EqualTo(true));
+
+        }
+
+        [Test]
+        public void UpdateClaim_Returns404_WhenNoClaimExists()
+        {
+            //arrange
+            var updatedClaim = new Claim
+            {
+                UCR = "Company1Claim1000",
+                CompanyId = 1,
+                ClaimDate = DateTime.Now,
+                LossDate = DateTime.Parse("2024-02-28"),
+                AssuredName = "Company1",
+                IncurredLoss = 500.00m,
+                Closed = true
+            };
+
+            //act
+            var controller = new ClaimController(_claimRepository);
+
+            var result = controller.UpdateClaimAsync("Company1Claim1000", updatedClaim).Result;
+            var notFoundResult = result as NotFoundObjectResult;
+
+            //assert
+            Assert.That(notFoundResult?.StatusCode, Is.EqualTo(404));
+        }
+
+        [Test]
+        public void UpdateClaim_ReturnsBadRequest_WhenUCRsDoNotMatch()
+        {
+            //arrange
+            var updatedClaim = new Claim
+            {
+                UCR = "Company1Claim1000",
+                CompanyId = 1,
+                ClaimDate = DateTime.Now,
+                LossDate = DateTime.Parse("2024-02-28"),
+                AssuredName = "Company1",
+                IncurredLoss = 500.00m,
+                Closed = true
+            };
+
+            //act
+            var controller = new ClaimController(_claimRepository);
+
+            var result = controller.UpdateClaimAsync("Company1Claim002", updatedClaim).Result;
+            var badRequestResult = result as BadRequestObjectResult;
+
+            //assert
+            Assert.That(badRequestResult?.StatusCode, Is.EqualTo(400));
         }
     }
 }

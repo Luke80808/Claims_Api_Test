@@ -1,4 +1,3 @@
-using Claims_Api.Interfaces;
 using Claims_Api.Models;
 using Claims_Api.Repositories;
 using Claims_Api.Services;
@@ -16,14 +15,10 @@ namespace Claims_Api.Controllers
     [Route("api/[controller]")]
     public class ClaimController : ControllerBase
     {
-        private readonly CompanyRepository _companies;
-        private readonly IRepositoryBase<ClaimType> _claimTypes;
         private readonly ClaimRepository _claims;
 
-        public ClaimController(CompanyRepository companies, IRepositoryBase<ClaimType> claimTypes, ClaimRepository claims)
+        public ClaimController(ClaimRepository claims)
         {
-            _companies = companies;
-            _claimTypes = claimTypes;
             _claims = claims;
         }
 
@@ -37,6 +32,12 @@ namespace Claims_Api.Controllers
         public async Task<IActionResult> GetClaimDetailsAsync(string claimUCR)
         {
             return await Task.FromResult(GetClaimDetails(claimUCR));
+        }
+
+        [HttpPut("update-claim", Name = "UpdateClaim")]
+        public async Task<IActionResult> UpdateClaimAsync(string claimUCR, Claim updatedClaim)
+        {
+            return await Task.FromResult(UpdateClaim(claimUCR, updatedClaim));
         }
 
         private IActionResult GetClaimsForCompany(int companyId)
@@ -58,10 +59,33 @@ namespace Claims_Api.Controllers
             var claim = _claims.Get(claimUCR);
             if (claim == null)
             {
-                return NotFound();
+                return NotFound($"Claim with UCR {claimUCR} not found");
             }
             var claimAge = ClaimService.GetClaimAgeInDays(claim.ClaimDate);
             return Ok(new ClaimResponse { Claim = claim, ClaimAgeInDays = claimAge });;
+        }
+
+        private IActionResult UpdateClaim(string claimUCR, Claim updatedClaim)
+        {
+            if (claimUCR != updatedClaim.UCR)
+            {
+                return BadRequest("Claim UCR mismatch");
+            }
+
+            var claimToUpdate = _claims.Get(claimUCR);
+            if (claimToUpdate == null)
+            {
+                return NotFound($"Claim with UCR {claimUCR} not found");
+            }
+
+            var updater = _claims.Update(updatedClaim);
+
+            if (updater == null)
+            {
+                return Problem();
+            }
+
+            return Ok(updater);
         }
     }
 }

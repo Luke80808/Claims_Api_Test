@@ -16,14 +16,10 @@ namespace Claims_Api.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly IRepositoryBase<Company> _companies;
-        private readonly IRepositoryBase<ClaimType> _claimTypes;
-        private readonly IRepositoryBase<Claim> _claims;
 
-        public CompanyController(IRepositoryBase<Company> companies, IRepositoryBase<ClaimType> claimTypes, IRepositoryBase<Claim> claims)
+        public CompanyController(IRepositoryBase<Company> companies)
         {
             _companies = companies;
-            _claimTypes = claimTypes;
-            _claims = claims;
         }
 
         [HttpGet("company-details", Name = "GetCompany")]
@@ -37,7 +33,7 @@ namespace Claims_Api.Controllers
             var company = _companies.Get(id.ToString());
             if (company == null)
             {
-                return NotFound();
+                return NotFound($"Company with Id {id} not found");
             }
             var hasActivePolicy = CompanyService.CheckCompanyHasActivePolicy(company.InsuranceEndDate);
             return Ok(new CompanyResponse { Company = company, HasActivePolicy = hasActivePolicy });
