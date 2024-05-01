@@ -1,11 +1,11 @@
-using Claims_Api.Controllers;
+﻿using Claims_Api.Controllers;
 using Claims_Api.Models;
 using Claims_Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Claims_Api_Test_NUnitTests
+namespace Claims_Api_Tests
 {
-    public class CompanyControllerTests
+    public class ClaimControllerTests
     {
         private CompanyRepository _companyRepository;
         private ClaimTypeRepository _claimTypeRepository;
@@ -107,32 +107,52 @@ namespace Claims_Api_Test_NUnitTests
         }
 
         [Test]
-        public void GetCompany_RetrievesCompany()
+        public void GetClaimsForCompany_ReturnsClaims()
         {
             //arrange
 
             //act
-            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
 
-            var result = controller.GetCompanyAsync(1).Result;
+            var result = controller.GetClaimsForCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
-            var companyResponse = okResult?.Value as CompanyResponse;
-            var actualCompany = companyResponse?.Company;
+            var listResult = okResult?.Value as List<Claim>;
 
             //assert
-            Assert.That(actualCompany, Is.EqualTo(_companyRepository._companies.FirstOrDefault(x => x.Id == 1)));
+            Assert.That(listResult, Is.EqualTo(_claimRepository._claims.Where(x => x.CompanyId == 1)));
         }
 
         [Test]
-        public void GetCompany_ThrowsNullReferenceException_WhenNoMatch()
+        public void GetClaimsForCompany_ReturnsEmptyList_WhenNoClaims()
         {
             //arrange
 
             //act
-            var controller = new CompanyController(_companyRepository, _claimTypeRepository, _claimRepository);
+            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
+
+            var result = controller.GetClaimsForCompanyAsync(100).Result;
+            var okResult = result as OkObjectResult;
+            var listResult = okResult?.Value as List<Claim>;
 
             //assert
-            Assert.ThrowsAsync<NullReferenceException>(() => controller.GetCompanyAsync(100));
+            Assert.That(listResult, Is.EqualTo(new List<Claim>()));
+        }
+
+        [Test]
+        public void GetClaimDetails_RetrievesClaim()
+        {
+            //arrange
+
+            //act
+            var controller = new ClaimController(_companyRepository, _claimTypeRepository, _claimRepository);
+
+            var result = controller.GetClaimDetailsAsync("Company1Claim001").Result;
+            var okResult = result as OkObjectResult;
+            var companyResponse = okResult?.Value as ClaimResponse;
+            var actualCompany = companyResponse?.Claim;
+
+            //assert
+            Assert.That(actualCompany, Is.EqualTo(_claimRepository._claims.FirstOrDefault(x => x.UCR == "Company1Claim001")));
         }
     }
 }

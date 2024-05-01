@@ -1,4 +1,4 @@
-﻿using Claims_Api_Test.Interfaces;
+﻿using Claims_Api.Interfaces;
 using Claims_Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,7 +42,7 @@ namespace Claims_Api.Controllers
             return Ok(new CompanyResponse { Company = company, HasActivePolicy = hasActivePolicy });
         }
 
-        private bool CheckCompanyHasActivePolicy(DateTime policyEndDate)
+        private static bool CheckCompanyHasActivePolicy(DateTime policyEndDate)
         {
             if (policyEndDate < DateTime.UtcNow)
             {

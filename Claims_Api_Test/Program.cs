@@ -1,7 +1,6 @@
-using Claims_Api.Repositories;
-using Claims_Api_Test.Interfaces;
+using Claims_Api.Interfaces;
 using Claims_Api.Models;
-using Claims_Api_Test.Repositories;
+using Claims_Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

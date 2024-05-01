@@ -1,11 +1,11 @@
-﻿using Claims_Api_Test.Interfaces;
+﻿using Claims_Api.Interfaces;
 using Claims_Api.Models;
 
 namespace Claims_Api.Repositories;
 
 public class ClaimTypeRepository : IRepositoryBase<ClaimType>
 {
-    private readonly List<ClaimType> _claimTypes = [];
+    public readonly List<ClaimType> _claimTypes = [];
 
     public void Add(ClaimType claimType)
     {

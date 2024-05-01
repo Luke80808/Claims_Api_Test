@@ -1,4 +1,4 @@
-﻿namespace Claims_Api_Test.Interfaces;
+﻿namespace Claims_Api.Interfaces;
 
 public interface IRepositoryBase<T>
 {

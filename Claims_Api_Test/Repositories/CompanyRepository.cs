@@ -1,7 +1,7 @@
-﻿using Claims_Api_Test.Interfaces;
+﻿using Claims_Api.Interfaces;
 using Claims_Api.Models;
 
-namespace Claims_Api_Test.Repositories;
+namespace Claims_Api.Repositories;
 
 public class CompanyRepository : IRepositoryBase<Company>
 {
