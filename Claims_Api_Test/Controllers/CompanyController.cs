@@ -1,5 +1,6 @@
 ﻿using Claims_Api.Interfaces;
 using Claims_Api.Models;
+using Claims_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api.Controllers
@@ -11,7 +12,7 @@ namespace Claims_Api.Controllers
     }
 
     [ApiController]
-    [Route("api/[controller]/companies")]
+    [Route("api/[controller]")]
     public class CompanyController : ControllerBase
     {
         private readonly IRepositoryBase<Company> _companies;
@@ -25,7 +26,7 @@ namespace Claims_Api.Controllers
             _claims = claims;
         }
 
-        [HttpGet("{id}", Name = "GetCompany")]
+        [HttpGet("company-details", Name = "GetCompany")]
         public async Task<IActionResult> GetCompanyAsync(int id)
         {
             return await Task.FromResult(GetCompany(id));
@@ -38,17 +39,8 @@ namespace Claims_Api.Controllers
             {
                 return NotFound();
             }
-            var hasActivePolicy = CheckCompanyHasActivePolicy(company.InsuranceEndDate);
+            var hasActivePolicy = CompanyService.CheckCompanyHasActivePolicy(company.InsuranceEndDate);
             return Ok(new CompanyResponse { Company = company, HasActivePolicy = hasActivePolicy });
-        }
-
-        private static bool CheckCompanyHasActivePolicy(DateTime policyEndDate)
-        {
-            if (policyEndDate < DateTime.UtcNow)
-            {
-                return false;
-            }
-            return true;
         }
     }
 }

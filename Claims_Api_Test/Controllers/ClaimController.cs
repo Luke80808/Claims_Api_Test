@@ -1,6 +1,7 @@
 using Claims_Api.Interfaces;
 using Claims_Api.Models;
 using Claims_Api.Repositories;
+using Claims_Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Claims_Api.Controllers
@@ -12,7 +13,7 @@ namespace Claims_Api.Controllers
     }
 
     [ApiController]
-    [Route("api/[controller]/claims")]
+    [Route("api/[controller]")]
     public class ClaimController : ControllerBase
     {
         private readonly CompanyRepository _companies;
@@ -26,13 +27,13 @@ namespace Claims_Api.Controllers
             _claims = claims;
         }
 
-        [HttpGet("/{companyId}", Name = "GetCompanyClaims")]
+        [HttpGet("company-claims", Name = "GetCompanyClaims")]
         public async Task<IActionResult> GetClaimsForCompanyAsync(int companyId)
         {
             return await Task.FromResult(GetClaimsForCompany(companyId));
         }
 
-        [HttpGet("{claimUCR}", Name = "GetClaimDetails")]
+        [HttpGet("claim-details", Name = "GetClaimDetails")]
         public async Task<IActionResult> GetClaimDetailsAsync(string claimUCR)
         {
             return await Task.FromResult(GetClaimDetails(claimUCR));
@@ -45,6 +46,10 @@ namespace Claims_Api.Controllers
             {
                 return NotFound();
             }
+            if (claims.Count == 0)
+            {
+                return Ok("No claims found for the given company.");
+            }
             return Ok(claims);
         }
 
@@ -55,13 +60,8 @@ namespace Claims_Api.Controllers
             {
                 return NotFound();
             }
-            var claimAge = GetClaimAgeInDays(claim.ClaimDate);
+            var claimAge = ClaimService.GetClaimAgeInDays(claim.ClaimDate);
             return Ok(new ClaimResponse { Claim = claim, ClaimAgeInDays = claimAge });;
-        }
-
-        private static double GetClaimAgeInDays(DateTime claimDate)
-        {
-            return (DateTime.Today - claimDate).TotalDays;
         }
     }
 }

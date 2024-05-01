@@ -135,7 +135,7 @@ namespace Claims_Api_Tests
             var listResult = okResult?.Value as List<Claim>;
 
             //assert
-            Assert.That(listResult, Is.EqualTo(new List<Claim>()));
+            Assert.That(listResult, Is.EqualTo(null));
         }
 
         [Test]
