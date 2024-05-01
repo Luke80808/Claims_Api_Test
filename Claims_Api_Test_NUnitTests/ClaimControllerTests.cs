@@ -113,7 +113,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.GetClaimsForCompanyAsync(1).Result;
             var okResult = result as OkObjectResult;
@@ -129,7 +129,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.GetClaimsForCompanyAsync(100).Result;
             var okResult = result as OkObjectResult;
@@ -145,7 +145,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.GetClaimDetailsAsync("Company1Claim001").Result;
             var okResult = result as OkObjectResult;
@@ -162,7 +162,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.GetClaimDetailsAsync("Company1Claim001").Result;
             var okResult = result as OkObjectResult;
@@ -179,7 +179,7 @@ namespace Claims_Api_Tests
             //arrange
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.GetClaimDetailsAsync("Company1Claim002").Result;
             var okResult = result as OkObjectResult;
@@ -206,7 +206,7 @@ namespace Claims_Api_Tests
             };
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.UpdateClaimAsync("Company1Claim002", updatedClaim).Result;
             var okResult = result as OkObjectResult;
@@ -233,7 +233,7 @@ namespace Claims_Api_Tests
             };
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.UpdateClaimAsync("Company1Claim1000", updatedClaim).Result;
             var notFoundResult = result as NotFoundObjectResult;
@@ -258,7 +258,7 @@ namespace Claims_Api_Tests
             };
 
             //act
-            var controller = new ClaimController(_claimRepository);
+            var controller = new ClaimController(_claimRepository, _companyRepository);
 
             var result = controller.UpdateClaimAsync("Company1Claim002", updatedClaim).Result;
             var badRequestResult = result as BadRequestObjectResult;
