@@ -110,6 +110,9 @@ namespace Claims_Api_Test_NUnitTests
         [Test]
         public void GetCompany_RetrievesCompany()
         {
+            //arrange
+
+            //act
             var controller = new ClaimsController(_companyRepository, _claimRepository);
 
             var result = controller.GetCompanyAsync(1).Result;
@@ -117,8 +120,20 @@ namespace Claims_Api_Test_NUnitTests
             var companyResponse = okResult?.Value as CompanyResponse;
             var actualCompany = companyResponse?.Company;
 
-            //Assert.Equals(1, 1);
+            //assert
             Assert.That(actualCompany, Is.EqualTo(_companyRepository._companies.FirstOrDefault(x => x.Id == 1)));
+        }
+
+        [Test]
+        public void GetCompany_ReturnsNullReferenceException_WhenNoMatch()
+        {
+            //arrange
+
+            //act
+            var controller = new ClaimsController(_companyRepository, _claimRepository);
+
+            //assert
+            Assert.ThrowsAsync<NullReferenceException>(() => controller.GetCompanyAsync(100));
         }
     }
 }
